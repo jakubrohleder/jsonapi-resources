@@ -144,14 +144,14 @@ module JSONAPI
     def _replace_has_many_links(association_type, association_key_values)
       association = self.class._associations[association_type]
 
-      send("#{association.foreign_key}=", association_key_values)
+      send("#{association.foreign_key}=", association_key_values, association_type)
       @save_needed = true
     end
 
     def _replace_has_one_link(association_type, association_key_value)
       association = self.class._associations[association_type]
 
-      send("#{association.foreign_key}=", association_key_value)
+      send("#{association.foreign_key}=", association_key_value, association_type)
       @save_needed = true
     end
 
@@ -164,7 +164,7 @@ module JSONAPI
     def _remove_has_one_link(association_type)
       association = self.class._associations[association_type]
 
-      send("#{association.foreign_key}=", nil)
+      send("#{association.foreign_key}=", nil, nil)
       @save_needed = true
     end
 
@@ -578,7 +578,7 @@ module JSONAPI
             @model.method(foreign_key).call
           end unless method_defined?(foreign_key)
 
-          define_method "#{foreign_key}=" do |value|
+          define_method "#{foreign_key}=" do |value, type|
             @model.method("#{foreign_key}=").call(value)
           end unless method_defined?("#{foreign_key}=")
 
